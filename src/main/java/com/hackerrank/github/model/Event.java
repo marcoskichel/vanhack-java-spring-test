@@ -1,12 +1,32 @@
 package com.hackerrank.github.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 
+@Entity
 public class Event {
+
+    @Id
     private Long id;
+
+    @NotNull
     private String type;
+
+    @NotNull
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinColumn(name = "actor_id")
     private Actor actor;
+
+    @NotNull
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinColumn(name = "repo_id")
     private Repo repo;
+
+    @NotNull
+    @JsonProperty("created_at")
     private Timestamp createdAt;
 
     public Event() {
@@ -18,6 +38,11 @@ public class Event {
         this.actor = actor;
         this.repo = repo;
         this.createdAt = createdAt;
+    }
+
+    @PrePersist
+    public void prePersist() {
+
     }
 
     public Long getId() {
