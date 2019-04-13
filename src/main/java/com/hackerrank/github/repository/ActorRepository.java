@@ -18,10 +18,4 @@ public interface ActorRepository extends JpaRepository<Actor, Long> {
             "order by count(e) desc, max(e.createdAt) desc, a.login asc")
     List<ActorEventResumeDto> listActorsSortedByNumberOfEvents();
 
-    @Query("select a from Event e " +
-            "join e.actor a " +
-            "group by a " +
-            "order by a.maxStreak desc, max(e.createdAt) desc, a.login asc")
-    List<Actor> listActorsSortedByMaxStreak();
-
 }

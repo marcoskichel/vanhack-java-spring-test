@@ -2,10 +2,10 @@ package com.hackerrank.github.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @Entity
 public class Actor {
@@ -19,22 +19,26 @@ public class Actor {
     @JsonProperty("avatar_url")
     private String avatar;
 
-    @Column(name = "current_streak")
-    private Integer currentStreak;
-
-    @Column(name = "max_streak")
-    private Integer maxStreak;
-
     public Actor() {
-        currentStreak = 1;
-        maxStreak = 1;
     }
 
     public Actor(Long id, String login, String avatar) {
-        this();
         this.id = id;
         this.login = login;
         this.avatar = avatar;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Actor actor = (Actor) o;
+        return Objects.equals(getId(), actor.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 
     public Long getId() {
@@ -61,22 +65,4 @@ public class Actor {
         this.avatar = avatar;
     }
 
-    public Integer getCurrentStreak() {
-        return currentStreak;
-    }
-
-    public void setCurrentStreak(Integer currentStreak) {
-        this.currentStreak = currentStreak;
-        if (currentStreak > maxStreak) {
-            maxStreak = currentStreak;
-        }
-    }
-
-    public Integer getMaxStreak() {
-        return maxStreak;
-    }
-
-    public void setMaxStreak(Integer maxStreak) {
-        this.maxStreak = maxStreak;
-    }
 }

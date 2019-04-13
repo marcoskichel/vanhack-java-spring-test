@@ -23,6 +23,10 @@ public class EventService {
         this.actorRepository = actorRepository;
     }
 
+    public void deleteAll() {
+        repository.deleteAll();
+    }
+
     public List<Event> listAllOrderedById() {
         return repository.findAllByOrderByIdAsc();
     }
@@ -31,24 +35,9 @@ public class EventService {
         if (repository.findById(toSave.getId()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        actorRepository.findById(toSave.getActor().getId())
-                .ifPresent(actor -> {
-                    actor = updateActorStreakBeforeSaving(actor, toSave.getCreatedAt().toLocalDateTime());
-                    toSave.setActor(actor);
-                });
         return repository.save(toSave);
     }
 
-    private Actor updateActorStreakBeforeSaving(Actor actor, LocalDateTime date) {
-        boolean eventsActualDate = countEventsOfActorAtDate(actor, date) > 0;
-        boolean eventsDayBefore = countEventsOfActorAtDate(actor, date.minusDays(1)) > 0;
-        if (!eventsDayBefore) {
-            actor.setCurrentStreak(1);
-        } else if (!eventsActualDate) {
-            actor.setCurrentStreak(actor.getCurrentStreak() + 1);
-        }
-        return actor;
-    }
 
     private Long countEventsOfActorAtDate(Actor actor, LocalDateTime date) {
         Timestamp yesterdayStart = Timestamp.valueOf(date.withHour(0).withMinute(0).withSecond(0));
@@ -57,10 +46,9 @@ public class EventService {
     }
 
     public List<Event> listByActorId(Long actorId) {
-        if (!actorRepository.findById(actorId).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        return repository.findByActorIdOrderByIdAsc(actorId);
+        return actorRepository.findById(actorId)
+                .map(repository::findByActorOrderByIdAsc)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
 }
