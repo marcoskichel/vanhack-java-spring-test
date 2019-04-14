@@ -57,6 +57,8 @@ public class ActorService {
             LocalDateTime eventDate = e.getCreatedAt().toLocalDateTime();
             if (actorLastEvaluatedEventDate.containsKey(actor)) {
                 LocalDateTime lastEvaluatedActorEvent = actorLastEvaluatedEventDate.get(actor);
+                actorLastEvaluatedEventDate.put(actor, eventDate);
+
                 if (lastEvaluatedActorEvent.toLocalDate().isEqual(eventDate.toLocalDate())) {
                     continue;
                 }
@@ -84,7 +86,7 @@ public class ActorService {
                     }
                     LocalDateTime a1LastEventDate = actorLastEvaluatedEventDate.get(a1);
                     LocalDateTime a2LastEventDate = actorLastEvaluatedEventDate.get(a2);
-                    if (!a1LastEventDate.isEqual(a2LastEventDate)) {
+                    if (!a2LastEventDate.isEqual(a1LastEventDate)) {
                         return a2LastEventDate.compareTo(a1LastEventDate);
                     }
                     return a1.getLogin().compareTo(a2.getLogin());
